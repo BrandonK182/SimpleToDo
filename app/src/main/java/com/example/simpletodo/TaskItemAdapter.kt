@@ -11,10 +11,15 @@ import androidx.recyclerview.widget.RecyclerView
 *Tells recyclerview how to display the items we give it
  */
 class TaskItemAdapter(val listOfItems: List<String>,
-                      val longClickListener: OnLongClickListener) : RecyclerView.Adapter<TaskItemAdapter.ViewHolder>() {
+                      val longClickListener: OnLongClickListener,
+                      val clickListener: OnClickListener) : RecyclerView.Adapter<TaskItemAdapter.ViewHolder>() {
 
     interface OnLongClickListener{
         fun onItemLongClicked(position: Int)
+    }
+
+    interface OnClickListener{
+        fun onItemClicked(position: Int)
     }
 
     //Usually involves inflating a layout from XML and returning the holder
@@ -51,6 +56,10 @@ class TaskItemAdapter(val listOfItems: List<String>,
             itemView.setOnLongClickListener {
                 longClickListener.onItemLongClicked(adapterPosition)
                 true
+            }
+
+            itemView.setOnClickListener{
+                clickListener.onItemClicked(adapterPosition)
             }
         }
     }

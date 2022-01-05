@@ -30,6 +30,30 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //Set up the button and input field, so that the user can enter a task and add it to the field
+        val inputTextField =  findViewById<EditText>(R.id.addTaskField)
+
+        val onClickListener = object : TaskItemAdapter.OnClickListener{
+            override fun onItemClicked(position: Int) {
+                //1.grab the text the user has inputted into @ addTaskField
+                val userInputtedTask = inputTextField.text.toString()
+
+                //2. remove old item
+                listOfTasks.removeAt(position)
+
+                //3.Add the string to our list of tasks: listOfTasks
+                listOfTasks.add(position,userInputtedTask)
+
+                //4.Reset text field
+                inputTextField.setText("")
+
+                //5. Notify the adapter that our data set has changed
+                adapter.notifyDataSetChanged()
+
+                saveItems()
+            }
+        }
+
         val onLongClickListener = object : TaskItemAdapter.OnLongClickListener{
             override fun onItemLongClicked(position: Int) {
                 //1. Remove the item from the list
@@ -52,14 +76,10 @@ class MainActivity : AppCompatActivity() {
         //look up recyclerView in layout
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         // Create adapter passing in the sample user data
-        adapter = TaskItemAdapter(listOfTasks, onLongClickListener)
+        adapter = TaskItemAdapter(listOfTasks, onLongClickListener, onClickListener)
         // Attach the adapter to the recyclerview to populate items
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
-
-        //Set up the button and input field, so that the user can enter a task and add it to the field
-
-        val inputTextField =  findViewById<EditText>(R.id.addTaskField)
 
         //Get reference to button
         //set on click listener
@@ -78,6 +98,8 @@ class MainActivity : AppCompatActivity() {
 
             saveItems()
         }
+
+
     }
 
     //Save the data that the user has inputted
