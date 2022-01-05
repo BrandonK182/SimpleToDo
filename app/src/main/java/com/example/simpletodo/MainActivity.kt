@@ -30,27 +30,20 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        var isEditing = false
+        var editingPosition = 0
+
         //Set up the button and input field, so that the user can enter a task and add it to the field
         val inputTextField =  findViewById<EditText>(R.id.addTaskField)
 
         val onClickListener = object : TaskItemAdapter.OnClickListener{
             override fun onItemClicked(position: Int) {
-                //1.grab the text the user has inputted into @ addTaskField
-                val userInputtedTask = inputTextField.text.toString()
+                isEditing = true
+                editingPosition = position
 
-                //2. remove old item
-                listOfTasks.removeAt(position)
+                //1. set inputTextField to listOfTasks entry
+                inputTextField.setText(listOfTasks.get(position))
 
-                //3.Add the string to our list of tasks: listOfTasks
-                listOfTasks.add(position,userInputtedTask)
-
-                //4.Reset text field
-                inputTextField.setText("")
-
-                //5. Notify the adapter that our data set has changed
-                adapter.notifyDataSetChanged()
-
-                saveItems()
             }
         }
 
@@ -88,10 +81,20 @@ class MainActivity : AppCompatActivity() {
             val userInputtedTask = inputTextField.text.toString()
 
             //2.Add the string to our list of tasks: listOfTasks
-            listOfTasks.add(userInputtedTask)
+            if(isEditing){
+                listOfTasks.removeAt(editingPosition)
+                listOfTasks.add(editingPosition, userInputtedTask)
+                isEditing = false
 
-            //Notify the adapter that our data has been updated
-            adapter.notifyItemInserted(listOfTasks.size - 1)
+                //Notify the adapter that our data set has changed
+                adapter.notifyDataSetChanged()
+            }
+            else{
+                listOfTasks.add(userInputtedTask)
+
+                //Notify the adapter that our data has been updated
+                adapter.notifyItemInserted(listOfTasks.size - 1)
+            }
 
             //3.Reset text field
             inputTextField.setText("")
